@@ -1,0 +1,59 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jan 17 01:09:48 2018
+
+@author: Dell
+"""
+import math
+import numpy as np
+import sklearn
+import pandas as pd # File Handling
+from sklearn.linear_model import LogisticRegression
+from sklearn.cross_validation import train_test_split
+import matplotlib.pyplot as plt
+from numpy import where
+# Data Read
+df = pd.read_csv('C:/anaconda by amit/data_classification.csv')
+
+df.columns = ["Hours_Slept","Hours_Studied","Class"]
+# Features
+X = np.array(df[['Hours_Slept','Hours_Studied']])
+# Class
+Y = np.array(df['Class'])
+
+# visualize data, uncomment "show()" to run it
+pos = where(Y == 1)
+neg = where(Y == 0)
+plt.scatter(X[pos, 0], X[pos, 1], marker='o', c='darkblue')
+plt.scatter(X[neg, 0], X[neg, 1], marker='s', c='darkred')
+plt.title('Hours Studied Vs. Hours Slept',size=18)
+plt.xlabel('Hours Slept',size=13)
+plt.ylabel('Hours Studied',size=13)
+plt.legend(['Pass', 'Fail'])
+plt.show()
+
+# formats the input data into two arrays, one of independant variables
+# and one of the dependant variable
+features = df[["Hours_Slept","Hours_Studied"]]
+features = np.array(features)
+labels = df["Class"]
+labels = np.array(labels)
+
+# Normalize grades to values between 0 and 1 for more efficient computation
+normalized_range = sklearn.preprocessing.MinMaxScaler(feature_range=(-1,1))
+
+# Extract Features + Labels
+# labels.shape =  (100,) #scikit expects this
+features = normalized_range.fit_transform(features)
+
+# Create Test/Train
+features_train,features_test,labels_train,labels_test = train_test_split(features,labels,test_size=0.3)
+
+# Scikit Logistic Regression
+clf = LogisticRegression()
+x=clf.fit(features_train,labels_train)
+#Score is Mean Accuracy
+scikit_score = clf.score(features_test,labels_test)
+#predict=clf.predict()
+print ('Scikit score: ', scikit_score)
+
